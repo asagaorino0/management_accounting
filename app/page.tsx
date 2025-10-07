@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Calculator, TrendingUp, DollarSign, Save, History, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Calculator, TrendingUp, DollarSign } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatCurrency, formatPercentage } from "@/lib/utils";
-import type { Calculation } from "@/shared/schema";
 
 interface FormData {
   sales: number;
@@ -42,10 +40,6 @@ export default function Home() {
     roi: 0,
   });
 
-  const [history, setHistory] = useState<Calculation[]>([]);
-  const [showHistory, setShowHistory] = useState(false);
-  const [calculationName, setCalculationName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   // 計算ロジック
   useEffect(() => {
@@ -79,87 +73,12 @@ export default function Home() {
     });
   }, [formData]);
 
-  // 履歴取得
-  useEffect(() => {
-    fetchHistory();
-  }, []);
-
-  const fetchHistory = async () => {
-    try {
-      const response = await fetch("/api/calculations");
-      if (response.ok) {
-        const data = await response.json();
-        setHistory(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch history:", error);
-    }
-  };
 
   const handleInputChange = (field: keyof FormData) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = parseFloat(e.target.value) || 0;
     setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSave = async () => {
-    if (!calculationName.trim()) {
-      alert("計算名を入力してください");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/calculations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: calculationName,
-          ...formData,
-          ...calculations,
-        }),
-      });
-
-      if (response.ok) {
-        setCalculationName("");
-        await fetchHistory();
-        alert("保存しました");
-      }
-    } catch (error) {
-      console.error("Failed to save:", error);
-      alert("保存に失敗しました");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLoad = (calc: Calculation) => {
-    setFormData({
-      sales: calc.sales,
-      variableCost: calc.variableCost,
-      fixedCost: calc.fixedCost,
-      investment: calc.investment || 0,
-    });
-    setShowHistory(false);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("この計算を削除しますか？")) return;
-
-    try {
-      const response = await fetch(`/api/calculations/${id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        await fetchHistory();
-        alert("削除しました");
-      }
-    } catch (error) {
-      console.error("Failed to delete:", error);
-      alert("削除に失敗しました");
-    }
   };
 
   const getProfitColor = (value: number) => {
@@ -186,7 +105,7 @@ export default function Home() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>入力値</span>
-                <div className="flex gap-2">
+                {/* <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
@@ -196,7 +115,7 @@ export default function Home() {
                     <History className="w-4 h-4 mr-2" />
                     履歴
                   </Button>
-                </div>
+                </div> */}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
@@ -273,25 +192,6 @@ export default function Home() {
                   />
                 </div>
               </div>
-
-              <div className="pt-4 border-t">
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="計算名を入力"
-                    value={calculationName}
-                    onChange={(e) => setCalculationName(e.target.value)}
-                    data-testid="input-calculation-name"
-                  />
-                  <Button
-                    onClick={handleSave}
-                    disabled={isLoading}
-                    data-testid="button-save"
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    保存
-                  </Button>
-                </div>
-              </div>
             </CardContent>
           </Card>
 
@@ -357,7 +257,7 @@ export default function Home() {
                     <p className="text-xs text-muted-foreground">Operating Profit</p>
                   </div>
                 </div>
-                <div 
+                <div
                   className={`text-3xl font-bold font-mono ${getProfitColor(calculations.operatingProfit)}`}
                   data-testid="result-operating-profit"
                 >
@@ -390,56 +290,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        {showHistory && (
-          <Card className="shadow-xl">
-            <CardHeader>
-              <CardTitle>計算履歴</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {history.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">
-                  履歴がありません
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  {history.map((calc) => (
-                    <div
-                      key={calc.id}
-                      className="flex items-center justify-between p-4 bg-muted rounded-lg hover:bg-muted/70 transition-colors"
-                    >
-                      <div>
-                        <h4 className="font-semibold">{calc.name}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          売上: {formatCurrency(calc.sales)} | 
-                          限界利益: {formatCurrency(calc.marginalProfit)}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleLoad(calc)}
-                          data-testid={`button-load-${calc.id}`}
-                        >
-                          読込
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDelete(calc.id)}
-                          data-testid={`button-delete-${calc.id}`}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );

@@ -5,8 +5,9 @@ import { Calculator, TrendingUp, DollarSign } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { formatCurrency, formatPercentage } from "@/lib/utils";
+import { formatCurrency, formatPercentage, convertToHalfWidth } from "@/lib/utils";
 import { Navigation } from "@/components/navigation";
+import { useCalculation } from "./contexts/CalculationContext";
 
 interface FormData {
   sales: number;
@@ -26,12 +27,8 @@ interface CalculationResults {
 }
 
 export default function Home() {
-  const [formData, setFormData] = useState<FormData>({
-    sales: 0,
-    variableCost: 0,
-    fixedCost: 0,
-    investment: 0,
-  });
+  const { calculationData, updateCalculationData } = useCalculation();
+  const formData = calculationData;
 
   const [calculations, setCalculations] = useState<CalculationResults>({
     marginalProfit: 0,
@@ -86,8 +83,9 @@ export default function Home() {
 
   const handleInputChange =
     (field: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = parseFloat(e.target.value) || 0;
-      setFormData((prev) => ({ ...prev, [field]: value }));
+      const convertedValue = convertToHalfWidth(e.target.value);
+      const value = parseFloat(convertedValue) || 0;
+      updateCalculationData({ [field]: value });
     };
 
   const getProfitColor = (value: number) => {
@@ -198,7 +196,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="investment">
                   投資額 <span className="text-xs text-muted-foreground">(ROI計算用)</span>
                 </Label>
@@ -216,7 +214,7 @@ export default function Home() {
                     onChange={handleInputChange("investment")}
                   />
                 </div>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
 
@@ -357,7 +355,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* <div className="grid grid-cols-2 gap-4">
               <Card className="result-card shadow-lg">
                 <CardContent className="p-4">
                   <h3 className="text-sm font-semibold mb-1">営業利益率</h3>
@@ -387,7 +385,7 @@ export default function Home() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

@@ -58,7 +58,7 @@ export default function Home() {
     const operatingProfit = marginalProfit - fixedCost;
 
     // 営業利益率
-    const operatingProfitRate = sales > 0 ? (operatingProfit / sales) * 100 : 0;
+    const operatingProfitRate = sales > 0 ? (breakEvenPoint / sales) * 100 : 0;
 
     // ROI
     const roi = investment > 0 ? (operatingProfit / investment) * 100 : 0;
@@ -173,7 +173,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="investment">
                   投資額 <span className="text-xs text-muted-foreground">(ROI計算用)</span>
                 </Label>
@@ -191,7 +191,7 @@ export default function Home() {
                     onChange={handleInputChange("investment")}
                   />
                 </div>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
 
@@ -230,25 +230,6 @@ export default function Home() {
                 </div>
               </CardContent>
             </Card>
-
-            <Card className="result-card shadow-lg">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold">損益分岐点売上高</h3>
-                    <p className="text-xs text-muted-foreground">Break-Even Point</p>
-                  </div>
-                  <DollarSign className="w-6 h-6 text-secondary" />
-                </div>
-                <div className="text-3xl font-bold font-mono" data-testid="result-break-even-point">
-                  {formatCurrency(calculations.breakEvenPoint)}
-                </div>
-                <div className="text-xs text-muted-foreground mt-2">
-                  固定費 ÷ (限界利益率 ÷ 100)
-                </div>
-              </CardContent>
-            </Card>
-
             <Card className="result-card shadow-lg">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
@@ -269,21 +250,35 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <div className="grid grid-cols-2 gap-4">
+            <Card className="result-card shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold">損益分岐点売上高</h3>
+                    <p className="text-xs text-muted-foreground">Break-Even Point</p>
+                  </div>
+                  <DollarSign className="w-6 h-6 text-secondary" />
+                </div>
+                <div className="text-3xl font-bold font-mono" data-testid="result-break-even-point">
+                  {formatCurrency(calculations.breakEvenPoint)}
+                </div>
+                <div className="text-xs text-muted-foreground mt-2">
+                  固定費 ÷ (限界利益率 ÷ 100)
+                </div>
+              </CardContent>
+            </Card>
+
+
+
+            <div className="grid grid-cols-1 gap-4">
               <Card className="result-card shadow-lg">
                 <CardContent className="p-4">
-                  <h3 className="text-sm font-semibold mb-1">営業利益率</h3>
+                  <h3 className="text-sm font-semibold mb-1">損益分岐点売上率</h3>
                   <div className="text-2xl font-bold font-mono" data-testid="result-operating-profit-rate">
                     {formatPercentage(calculations.operatingProfitRate)}
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card className="result-card shadow-lg">
-                <CardContent className="p-4">
-                  <h3 className="text-sm font-semibold mb-1">ROI</h3>
-                  <div className="text-2xl font-bold font-mono" data-testid="result-roi">
-                    {formatPercentage(calculations.roi)}
+                  <div className="text-xs text-muted-foreground mt-2">
+                    損益分岐点売上高 ÷ 売上額
                   </div>
                 </CardContent>
               </Card>

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatCurrency, formatPercentage } from "@/lib/utils";
+import { Navigation } from "@/components/navigation";
 
 interface FormData {
   sales: number;
@@ -122,6 +123,8 @@ export default function Home() {
           </p>
         </div>
 
+        <Navigation />
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <Card className="shadow-xl">
             <CardHeader>
@@ -195,7 +198,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* <div className="space-y-2">
+              <div className="space-y-2">
                 <Label htmlFor="investment">
                   投資額 <span className="text-xs text-muted-foreground">(ROI計算用)</span>
                 </Label>
@@ -213,7 +216,7 @@ export default function Home() {
                     onChange={handleInputChange("investment")}
                   />
                 </div>
-              </div> */}
+              </div>
             </CardContent>
           </Card>
 
@@ -354,7 +357,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <Card className="result-card shadow-lg">
                 <CardContent className="p-4">
                   <h3 className="text-sm font-semibold mb-1">営業利益率</h3>
@@ -384,7 +387,7 @@ export default function Home() {
                   </div>
                 </CardContent>
               </Card>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

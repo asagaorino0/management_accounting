@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calculator, Package, TrendingUp } from "lucide-react";
+import { Calculator, Package, TrendingUp, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
@@ -20,6 +20,11 @@ const tabs = [
     name: "シミュレーター",
     href: "/simulation",
     icon: TrendingUp,
+  },
+  {
+    name: "利益計画",
+    href: "/profit-plan",
+    icon: Target,
   },
 ];
 
@@ -43,7 +48,11 @@ export function Navigation() {
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               )}
-              data-testid={`tab-${tab.href === "/" ? "overview" : tab.href === "/products" ? "products" : "simulation"}`}
+              data-testid={`tab-${tab.href === "/" ? "overview" :
+                tab.href === "/products" ? "products" :
+                  tab.href === "/simulation" ? "simulation" :
+                    "profit-plan"
+                }`}
             >
               <Icon className="w-4 h-4 mr-2" />
               {tab.name}

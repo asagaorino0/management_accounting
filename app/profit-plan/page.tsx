@@ -38,7 +38,7 @@ export default function ProfitPlanPage() {
             利益計画
           </h1>
           <p className="text-gray-600 dark:text-gray-300">
-            月間利益目標の達成度を確認
+            どれくらい売上を達成すれば利益が出るか
           </p>
         </div>
 

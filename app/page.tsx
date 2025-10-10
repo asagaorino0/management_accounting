@@ -162,6 +162,9 @@ export default function Home() {
 
               <div className="space-y-2">
                 <Label htmlFor="variableCost">変動費</Label>
+                <p className="text-xs text-muted-foreground">
+                  売れれば売れるほどかかる費用（材料費、外注費、仕入れ高、送料など）
+                </p>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                     ¥
@@ -180,6 +183,9 @@ export default function Home() {
 
               <div className="space-y-2">
                 <Label htmlFor="fixedCost">固定費</Label>
+                <p className="text-xs text-muted-foreground">
+                  売れても売れなくてもかかる費用（人件費、地代家賃、光熱水料、広告費、交際費、会議費など）
+                </p>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                     ¥
@@ -293,6 +299,9 @@ export default function Home() {
                     <p className="text-xs text-muted-foreground">
                       Break-Even Point
                     </p>
+                    <p className="text-xs text-muted-foreground">
+                      これ以上あれば、利益が出るボーダーライン
+                    </p>
                   </div>
                   <DollarSign className="w-6 h-6 text-secondary" />
                 </div>
@@ -315,6 +324,9 @@ export default function Home() {
                     <h3 className="text-lg font-semibold">損益分岐点売上率</h3>
                     <p className="text-xs text-muted-foreground">
                       Break-Even Point Ratio
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      低ければ低いほど安全
                     </p>
                   </div>
                   <div className={`px-3 py-1 rounded-full text-xs font-bold text-white ${getBreakEvenRatioStatus(calculations.breakEvenPointRatio).badgeColor}`}>

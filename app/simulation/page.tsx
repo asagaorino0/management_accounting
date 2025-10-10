@@ -1,54 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { TrendingUp, DollarSign, Calculator } from "lucide-react";
 import { formatCurrency, formatPercentage, convertToHalfWidth } from "@/lib/utils";
 import { Navigation } from "@/components/navigation";
 import { useProducts } from "../contexts/ProductsContext";
-import { useCalculation } from "../contexts/CalculationContext";
-
-interface SimulationRow {
-  price: number;
-  variableCost: number;
-  quantity: number;
-  salesAmount: number;
-  variableCostAmount: number;
-}
 
 export default function SimulationPage() {
-  const { products } = useProducts();
-  const { calculationData, updateCalculationData } = useCalculation();
-  const [simulations, setSimulations] = useState<SimulationRow[]>([]);
-  const fixedCost = calculationData.fixedCost;
-
-  useEffect(() => {
-    setSimulations(
-      products.map((product) => ({
-        price: product.price,
-        variableCost: product.variableCost,
-        quantity: 0,
-        salesAmount: 0,
-        variableCostAmount: 0,
-      }))
-    );
-  }, [products]);
-
-  const updateSimulation = (
-    index: number,
-    field: "price" | "variableCost" | "quantity",
-    value: number
-  ) => {
-    const newSimulations = [...simulations];
-    const sim = { ...newSimulations[index], [field]: value };
-
-    sim.salesAmount = sim.price * sim.quantity;
-    sim.variableCostAmount = sim.variableCost * sim.quantity;
-
-    newSimulations[index] = sim;
-    setSimulations(newSimulations);
-  };
+  const { products, simulations, updateSimulation, simulatorFixedCost, setSimulatorFixedCost } = useProducts();
+  const fixedCost = simulatorFixedCost;
 
   const totalSales = simulations.reduce((sum, sim) => sum + sim.salesAmount, 0);
   const totalVariableCost = simulations.reduce(
@@ -130,7 +91,7 @@ export default function SimulationPage() {
                 <Input
                   type="number"
                   value={fixedCost || ""}
-                  onChange={(e) => updateCalculationData({ fixedCost: Number(convertToHalfWidth(e.target.value)) || 0 })}
+                  onChange={(e) => setSimulatorFixedCost(Number(convertToHalfWidth(e.target.value)) || 0)}
                   placeholder="0"
                   className="text-lg font-bold h-9"
                   data-testid="input-fixed-cost"
@@ -229,12 +190,13 @@ export default function SimulationPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-6 gap-4 font-semibold text-sm text-muted-foreground pb-2 border-b">
+                  <div className="grid grid-cols-7 gap-3 font-semibold text-sm text-muted-foreground pb-2 border-b">
                     <div>商品名</div>
                     <div className="text-right">販売価格</div>
                     <div className="text-right">変動費</div>
                     <div className="text-right">限界利益率</div>
                     <div className="text-right">販売数</div>
+                    <div className="text-right">限界利益額</div>
                     <div className="text-right">販売額</div>
                   </div>
                   {products.map((product, index) => {
@@ -244,6 +206,7 @@ export default function SimulationPage() {
 
                     const marginalProfit = sim.price - sim.variableCost;
                     const marginalProfitRate = sim.price > 0 ? (marginalProfit / sim.price) * 100 : 0;
+                    const marginalProfitAmount = marginalProfit * sim.quantity;
 
                     // 元の限界利益率を計算
                     const originalMarginalProfit = product.price - product.variableCost;
@@ -257,7 +220,7 @@ export default function SimulationPage() {
                     return (
                       <div
                         key={index}
-                        className="grid grid-cols-6 gap-4 items-center"
+                        className="grid grid-cols-7 gap-3 items-center"
                         data-testid={`simulation-row-${index}`}
                       >
                         <div className="font-medium">{product.name}</div>
@@ -269,7 +232,7 @@ export default function SimulationPage() {
                               updateSimulation(index, "price", Number(convertToHalfWidth(e.target.value)) || 0)
                             }
                             placeholder="0"
-                            className="text-right font-mono"
+                            className="text-right font-mono text-sm"
                             data-testid={`input-sim-price-${index}`}
                           />
                         </div>
@@ -281,7 +244,7 @@ export default function SimulationPage() {
                               updateSimulation(index, "variableCost", Number(convertToHalfWidth(e.target.value)) || 0)
                             }
                             placeholder="0"
-                            className="text-right font-mono"
+                            className="text-right font-mono text-sm"
                             data-testid={`input-sim-variable-cost-${index}`}
                           />
                         </div>
@@ -301,12 +264,18 @@ export default function SimulationPage() {
                               updateSimulation(index, "quantity", Number(convertToHalfWidth(e.target.value)) || 0)
                             }
                             placeholder="0"
-                            className="text-right"
+                            className="text-right text-sm"
                             data-testid={`input-quantity-${index}`}
                           />
                         </div>
                         <div
-                          className="text-right font-mono font-bold"
+                          className="text-right font-mono font-bold text-sm"
+                          data-testid={`result-marginal-profit-amount-${index}`}
+                        >
+                          {formatCurrency(marginalProfitAmount || 0)}
+                        </div>
+                        <div
+                          className="text-right font-mono font-bold text-sm"
                           data-testid={`result-sales-amount-${index}`}
                         >
                           {formatCurrency(sim.salesAmount || 0)}
